@@ -1,0 +1,32 @@
+# Project Dependencies
+# --------------------
+# Java Development Kit (JDK) 8 or higher is required to compile and run the project.
+
+# Required Libraries/Dependencies:
+javax.swing      # For GUI components
+java.awt         # For graphics and event handling
+java.io          # For file I/O operations
+java.sql         # For SQLite database integration
+java.util        # For data structures like LinkedList, HashMap, etc.
+
+# Database
+SQLite JDBC Driver (sqlite-jdbc-3.36.0.3.jar)  # Required for database operations
+
+# Image Assets
+images/background_ash.png       # Background image for timetable
+images/background_white.png     # Alternate background image
+images/timetable_grid2.png      # Grid layout for timetable
+images/green_rect.png           # Highlight for mouse movement
+images/blue_rect.png            # Highlight for mouse click
+images/extra_cell1.png          # Extra cell decoration 1
+images/extra_cell2.png          # Extra cell decoration 2
+images/lock.png                 # Lock icon for locked timetable slots
+
+# Testing Framework (Optional)
+JUnit 5                         # For unit testing
+
+# Instructions:
+# -------------
+# 1. Place all image assets in the directory: src/timetable_plus/images/
+# 2. Add the SQLite JDBC driver to your classpath.
+#    Example: Place sqlite-jdbc-3.36.0.3.jar in your project's lib folder.
