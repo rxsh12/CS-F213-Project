@@ -1,4 +1,4 @@
-Here’s a detailed README file for your **BITS Pilani Timetable Builder Project**:
+
 
 ---
 
