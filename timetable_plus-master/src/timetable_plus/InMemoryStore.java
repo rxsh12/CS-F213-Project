@@ -21,6 +21,7 @@ public class InMemoryStore implements Serializable {
     private Map<String, Classroom> classrooms;
     private List<Schedule> schedules;
     private Map<String, User> users;
+    private Schedule currentSchedule;
     
     // Singleton pattern
     private static InMemoryStore instance;
@@ -91,7 +92,7 @@ public class InMemoryStore implements Serializable {
     }
     
     public List<Schedule> getAllSchedules() {
-        return schedules;
+        return schedules != null ? new ArrayList<>(schedules) : new ArrayList<>();
     }
     
     // Faculty workload tracking
@@ -143,10 +144,14 @@ public class InMemoryStore implements Serializable {
     
     // Schedule retrieval
     public Schedule getCurrentSchedule() {
-        if(schedules.isEmpty()) {
-            schedules.add(new Schedule("Default"));
+        return currentSchedule;
+    }
+    
+    public void setCurrentSchedule(Schedule schedule) {
+        if (schedule == null) {
+            throw new IllegalArgumentException("Schedule cannot be null");
         }
-        return schedules.get(0);
+        this.currentSchedule = schedule;
     }
     
     public Schedule getStudentSchedule(String studentId) {
@@ -250,14 +255,10 @@ public class InMemoryStore implements Serializable {
         addUser(new Student("student1", "student123", "2022A7PS0001H"));
         addUser(new Student("student2", "student123", "2022A7PS0002H"));
     }
+    //  retrieve all users
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
+    }
+
 }
 
-//  retrieve all users
-public List<User> getAllUsers() {
-    return new ArrayList<>(users.values());
-}
-
-//  retrieve all schedules
-public List<Schedule> getAllSchedules() {
-    return schedules;
-}

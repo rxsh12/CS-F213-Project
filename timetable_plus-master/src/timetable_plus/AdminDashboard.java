@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class AdminDashboard extends JFrame {
     private InMemoryStore store = InMemoryStore.getInstance();
+    private int currentScheduleIndex = 0;
     
     public AdminDashboard() {
         setTitle("Admin Dashboard - BITS Timetable");
@@ -225,19 +226,77 @@ public class AdminDashboard extends JFrame {
     }
     
     private void importCourses() {
-        // Similar implementation to importClassrooms
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                CSVHandler.importCourses(fileChooser.getSelectedFile().getPath());
+                JOptionPane.showMessageDialog(this, "Courses imported successfully!");
+                // Refresh the UI to show the newly imported courses
+                refreshPanels();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error importing courses: " + ex.getMessage(),
+                                            "Import Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
     private void exportCourses() {
-        // Similar implementation to exportClassrooms
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                CSVHandler.exportCourses(fileChooser.getSelectedFile().getPath());
+                JOptionPane.showMessageDialog(this, "Courses exported successfully!");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error exporting courses: " + ex.getMessage(),
+                                            "Export Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
     private void importInstructors() {
-        // Similar implementation to importClassrooms
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                CSVHandler.importInstructors(fileChooser.getSelectedFile().getPath());
+                JOptionPane.showMessageDialog(this, "Instructors imported successfully!");
+                // Refresh the UI to show the newly imported instructors
+                refreshPanels();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error importing instructors: " + ex.getMessage(),
+                                            "Import Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     
     private void exportInstructors() {
-        // Similar implementation to exportClassrooms
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                CSVHandler.exportInstructors(fileChooser.getSelectedFile().getPath());
+                JOptionPane.showMessageDialog(this, "Instructors exported successfully!");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error exporting instructors: " + ex.getMessage(),
+                                            "Export Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    // Helper method to refresh all panels after import operations
+    private void refreshPanels() {
+        // This method would recreate or update the tabbed panels to reflect changes
+        // For a complete implementation, you might want to refresh only the affected panel
+        Container contentPane = getContentPane();
+        contentPane.removeAll();
+        
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Classrooms", createClassroomPanel());
+        tabs.addTab("Courses", createCoursePanel());
+        tabs.addTab("Instructors", createInstructorPanel());
+        tabs.addTab("Generate Timetable", createSchedulePanel());
+        
+        contentPane.add(tabs);
+        contentPane.revalidate();
+        contentPane.repaint();
     }
     
     private void generateNewTimetable() {
@@ -262,10 +321,53 @@ public class AdminDashboard extends JFrame {
     }
     
     private void showPreviousTimetable() {
-        // Implementation to navigate between generated timetables
+        java.util.List<Schedule> schedules = store.getAllSchedules();
+        if (schedules == null || schedules.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "No timetables available.", 
+                "Navigation Error", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        currentScheduleIndex--;
+        if (currentScheduleIndex < 0) {
+            currentScheduleIndex = schedules.size() - 1;
+        }
+
+        Schedule schedule = schedules.get(currentScheduleIndex);
+        store.setCurrentSchedule(schedule);
+        refreshTimetablePanel();
     }
-    
+
     private void showNextTimetable() {
-        // Implementation to navigate between generated timetables
+        java.util.List<Schedule> schedules = store.getAllSchedules();
+        if (schedules == null || schedules.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "No timetables available.", 
+                "Navigation Error", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        currentScheduleIndex++;
+        if (currentScheduleIndex >= schedules.size()) {
+            currentScheduleIndex = 0;
+        }
+
+        Schedule schedule = schedules.get(currentScheduleIndex);
+        store.setCurrentSchedule(schedule);
+        refreshTimetablePanel();
+    }
+
+    private void refreshTimetablePanel() {
+        Container contentPane = getContentPane();
+        JTabbedPane tabs = (JTabbedPane) contentPane.getComponent(0);
+        int scheduleTabIndex = tabs.indexOfTab("Generate Timetable");
+        if (scheduleTabIndex != -1) {
+            tabs.setComponentAt(scheduleTabIndex, createSchedulePanel());
+            tabs.revalidate();
+            tabs.repaint();
+        }
     }
 }

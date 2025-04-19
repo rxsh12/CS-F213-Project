@@ -43,15 +43,42 @@ public class DragDropManager implements DragGestureListener, DropTargetListener 
     
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
-        // Highlight valid drop targets
+        try {
+            Point dropPoint = dtde.getLocation();
+            ScheduleSlot targetSlot = getSlotAtPoint(dropPoint);
+            
+            if (targetSlot != null && !targetSlot.isLocked()) {
+                Transferable transferable = dtde.getTransferable();
+                Course draggedCourse = (Course) transferable.getTransferData(CourseTransferable.COURSE_FLAVOR);
+                
+                if (validateDrop(draggedCourse, targetSlot)) {
+                    dtde.acceptDrag(DnDConstants.ACTION_MOVE);
+                    // Highlight potential drop target
+                    if (component instanceof JComponent) {
+                        ((JComponent) component).repaint(
+                            dropPoint.x - 25, dropPoint.y - 25, 50, 50);
+                    }
+                } else {
+                    dtde.rejectDrag();
+                }
+            } else {
+                dtde.rejectDrag();
+            }
+        } catch (Exception e) {
+            dtde.rejectDrag();
+        }
     }
     
     @Override
     public void dropActionChanged(DropTargetDragEvent dtde) {
+        dragOver(dtde); 
     }
     
     @Override
     public void dragExit(DropTargetEvent dte) {
+        if (component instanceof JComponent) {
+            component.repaint();
+        }
     }
     
     @Override

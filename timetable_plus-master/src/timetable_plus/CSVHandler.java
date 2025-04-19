@@ -99,10 +99,38 @@ public class CSVHandler {
     }
     
     public static void exportInstructors(String filename) throws IOException {
-        // Similar implementation to exportClassrooms and exportCourses
+        try (PrintWriter writer = new PrintWriter(new File(filename))) {
+            // Write header
+            writer.println("InstructorID,Name");
+            
+            // Write data rows
+            for (Instructor instructor : InMemoryStore.getInstance().getAllInstructors().values()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(instructor.getInstructorId()).append(DELIMITER);
+                sb.append(instructor.getName());
+                
+                writer.println(sb.toString());
+            }
+        }
     }
     
     public static void importInstructors(String filename) throws IOException {
-        // Similar implementation to importClassrooms and importCourses
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            // Skip header
+            String line = reader.readLine();
+            
+            // Read data rows
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(DELIMITER);
+                
+                if (values.length >= 2) {
+                    String instructorID = values[0].trim();
+                    String name = values[1].trim();
+                    
+                    Instructor instructor = new Instructor(instructorID, name);
+                    InMemoryStore.getInstance().addInstructor(instructor);
+                }
+            }
+        }
     }
 }

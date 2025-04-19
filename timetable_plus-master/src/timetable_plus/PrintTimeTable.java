@@ -2,12 +2,13 @@ package timetable_plus;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class prints the timetable displaying on screen.
  * Graphics functions are used in this class.
  *
- * @author Hariprasad
  */
 
 public class PrintTimeTable extends JPanel {
@@ -24,6 +25,8 @@ public class PrintTimeTable extends JPanel {
     private ImageIcon extra1;
     private ImageIcon extra2;
     private ImageIcon lock;
+    public int noOfDays = 5;       
+    public int noOfPeriods = 10;
 
     PrintTimeTable(InMemoryStore mem) {
         memory = mem;
@@ -39,6 +42,55 @@ public class PrintTimeTable extends JPanel {
 
         setSize(701, 381);
     }
+    
+    public class ClassModel {
+    public String name;
+
+    public ClassModel(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+}
+    public class InMemoryStore {
+
+    public int noOfDays = 5;
+    public int noOfPeriods = 10;
+
+    public ArrayList<ClassModel> classModel = new ArrayList<>();
+    public ArrayList<String> teacherModel = new ArrayList<>();
+
+    // Dummy method to simulate timetable retrieval
+    public TimeTableLock[][] getTimeTable(int classIndex) {
+        // Replace with your actual logic
+        return new TimeTableLock[noOfDays][noOfPeriods];
+    }
+}
+    public class TimeTableData {
+    public String subjectName;
+    public String className;
+    public List<String> teacherList;
+    public Color subjectColor;
+
+    public TimeTableData(String subjectName, String className, List<String> teacherList, Color subjectColor) {
+        this.subjectName = subjectName;
+        this.className = className;
+        this.teacherList = teacherList;
+        this.subjectColor = subjectColor;
+    }
+}   
+    public class TimeTableLock {
+    public boolean lock;
+    public TimeTableData data;
+
+    public TimeTableLock(TimeTableData data, boolean lock) {
+        this.data = data;
+        this.lock = lock;
+    }
+} 
 
     @Override
     public void paint(Graphics g) {

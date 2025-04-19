@@ -2,9 +2,27 @@ package timetable_plus;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DrawTimeTable extends JPanel {
     // ... existing fields ...
+    
+    private Map<Integer, Integer> labSessions;
+
+    private void initializeLabSessions() {
+        labSessions = new HashMap<>();
+        // Example: Lab on Day 2 (Wednesday) starting at Period 3
+        labSessions.put(2, 3); // Day 2, Periods 3 and 4 are lab sessions
+    }
+
+    private boolean isLabSession(int day, int period) {
+        if (labSessions.containsKey(day)) {
+            int startPeriod = labSessions.get(day);
+            return period == startPeriod || period == startPeriod + 1; // Two consecutive periods
+        }
+        return false;
+    }
     
     private void drawBITSFeatures(Graphics gc) {
         // Highlight lunch breaks

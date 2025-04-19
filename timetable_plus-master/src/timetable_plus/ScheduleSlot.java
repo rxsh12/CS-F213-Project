@@ -20,6 +20,14 @@ public class ScheduleSlot implements Serializable {
         this.locked = false;
     }
     
+    // Add this new constructor to match DatabaseManager usage
+    public ScheduleSlot(Course course, String roomNumber, String instructorId) {
+        this.course = course;
+        this.roomNumber = roomNumber;
+        this.instructorId = instructorId;
+        this.locked = false;
+    }
+    
     // BITS-specific methods
     public boolean isAvailable() {
         return !locked && course == null;

@@ -5,28 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule implements Serializable {
-    private ScheduleSlot[][] slots;
     private String name;
+    private ScheduleSlot[][] slots;
     
     public Schedule(String name) {
         this.name = name;
         this.slots = new ScheduleSlot[InMemoryStore.WORKING_DAYS][InMemoryStore.PERIODS_PER_DAY];
-        
-        // Initialize all slots
-        for(int day = 0; day < InMemoryStore.WORKING_DAYS; day++) {
-            for(int period = 0; period < InMemoryStore.PERIODS_PER_DAY; period++) {
-                slots[day][period] = new ScheduleSlot(day, period);
-                
-                // Lock lunch periods
-                if(period >= BITSConstraints.LUNCH_START && 
-                   period < BITSConstraints.LUNCH_END) {
-                    slots[day][period].setLocked(true);
-                }
-            }
+    }
+    
+    public void setSlot(int day, int period, ScheduleSlot slot) {
+        if (day < 0 || day >= InMemoryStore.WORKING_DAYS || 
+            period < 0 || period >= InMemoryStore.PERIODS_PER_DAY) {
+            throw new IllegalArgumentException("Invalid day or period");
         }
+        slots[day][period] = slot;
     }
     
     public ScheduleSlot getSlot(int day, int period) {
+        if (day < 0 || day >= InMemoryStore.WORKING_DAYS || 
+            period < 0 || period >= InMemoryStore.PERIODS_PER_DAY) {
+            throw new IllegalArgumentException("Invalid day or period");
+        }
         return slots[day][period];
     }
     

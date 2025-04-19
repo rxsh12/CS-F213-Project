@@ -202,10 +202,103 @@ public class DatabaseManager {
     }
     
     public static void loadCourses() throws SQLException {
-        // Similar implementation to loadClassrooms
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM courses")) {
+            
+            while (rs.next()) {
+                String courseCode = rs.getString("course_code");
+                String courseName = rs.getString("course_name");
+                int credits = rs.getInt("credits");
+                int lectureHours = rs.getInt("lecture_hours");
+                int labHours = rs.getInt("lab_hours");
+                int enrolledStudents = rs.getInt("enrolled_students");
+                
+                Course course = new Course(courseCode, courseName);
+                course.setCredits(credits);
+                course.setLectureHours(lectureHours);
+                course.setLabHours(labHours);
+                course.setEnrolledStudents(enrolledStudents);
+                
+                InMemoryStore.getInstance().addCourse(course);
+            }
+        }
     }
     
     public static void loadSchedules() throws SQLException {
-        // Similar implementation to load schedules from database
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            // First load all schedules
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT * FROM schedules")) {
+                
+                while (rs.next()) {
+                    int scheduleId = rs.getInt("id");
+                    String name = rs.getString("name");
+                    
+                    Schedule schedule = new Schedule(name);
+                    
+                    // Load slots for this schedule
+                    try (PreparedStatement ps = conn.prepareStatement(
+                        "SELECT * FROM schedule_slots WHERE schedule_id = ?")) {
+                        
+                        ps.setInt(1, scheduleId);
+                        ResultSet slotRs = ps.executeQuery();
+                        
+                        while (slotRs.next()) {
+                            int day = slotRs.getInt("day");
+                            int period = slotRs.getInt("period");
+                            String courseCode = slotRs.getString("course_code");
+                            String roomNumber = slotRs.getString("room_number");
+                            String instructorId = slotRs.getString("instructor_id");
+                            
+                            Course course = InMemoryStore.getInstance().getCourse(courseCode);
+                            if (course != null) {
+                                ScheduleSlot slot = new ScheduleSlot(course, roomNumber, instructorId);
+                                schedule.setSlot(day, period, slot);
+                            }
+                        }
+                    }
+                    
+                    InMemoryStore.getInstance().addSchedule(schedule);
+                }
+            }
+        }
+    }
+    
+    public static void saveInstructor(Instructor instructor) throws SQLException {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(
+                 "INSERT OR REPLACE INTO instructors VALUES (?, ?, ?, ?, ?)")) {
+            
+            ps.setString(1, instructor.getInstructorId());
+            ps.setString(2, instructor.getName());
+            ps.setInt(3, instructor.getLecturesAssigned());
+            ps.setInt(4, instructor.getTutorialsAssigned());
+            ps.setInt(5, instructor.getLabsAssigned());
+            
+            ps.executeUpdate();
+        }
+    }
+    
+    public static void loadInstructors() throws SQLException {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM instructors")) {
+            
+            while (rs.next()) {
+                String id = rs.getString("instructor_id");
+                String name = rs.getString("name");
+                int lectures = rs.getInt("lectures_assigned");
+                int tutorials = rs.getInt("tutorials_assigned");
+                int labs = rs.getInt("labs_assigned");
+                
+                Instructor instructor = new Instructor(id, name)
+                    .withAssignedLectures(lectures)
+                    .withAssignedTutorials(tutorials)
+                    .withAssignedLabs(labs);
+                
+                InMemoryStore.getInstance().addInstructor(instructor);
+            }
+        }
     }
 }
