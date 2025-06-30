@@ -168,20 +168,7 @@ Handles database persistence using SQLite.
 
 ---
 
-## **Screenshots**
 
-1. Admin Dashboard  
-![Admin Dashboard](https://cdn.mathpix.com/cropped/2025_04_07_d5cea3847ed0875a7019g-08.jpgdule  
-![Faculty Schedule](https://cdn.mathpix.com/cropped/2025_04_07_d5cea3847ed0875a7019g-12.jpgetable  
-![Student Timetable](https://cdn.mathpix.com/cropped/2025_04_07_d5cea3847ed0875a7019g-13.jpgTesting**
-
-Run unit tests using JUnit:
-```bash
-javac -cp .:junit.jar src/timetable_plus/tests/*.java 
-java -cp .:junit.jar org.junit.runner.JUnitCore timetable_plus.tests.BITSTimetableTest 
-```
-
----
 
 ## **Future Enhancements**
 1. Add support for semester-long scheduling with holidays.
